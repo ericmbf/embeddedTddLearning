@@ -17,4 +17,5 @@ int mod1_get_a(mod1_s *obj)
 
 void mod1_process(mod1_s *obj)
 {
+    obj->a = 18;
 }

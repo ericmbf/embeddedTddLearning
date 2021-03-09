@@ -1,7 +1,6 @@
-#ifdef UNIT_TEST
+#if defined(UNIT_TEST) && !defined(UNO) && !defined(MSP430)
 
 #include <unity.h>
-
 #include "mod1.h"
 
 void test_mod1()

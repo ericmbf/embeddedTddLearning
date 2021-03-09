@@ -1,9 +1,9 @@
-#ifndef UNIT_TEST
 /*
  * Blink
  * Turns on an LED on for one second,
  * then off for one second, repeatedly.
  */
+
 #include <Arduino.h>
 
 void setup()
@@ -20,8 +20,6 @@ void loop()
   delay(1000);
   // turn the LED off by making the voltage LOW
   digitalWrite(RED_LED, LOW);
-   // wait for a second
+  // wait for a second
   delay(1000);
 }
-
-#endif

@@ -1,0 +1,5 @@
+check if first in is the first out
+check boundary limits
+check put out of limit int
+check array over flow
+check initial state

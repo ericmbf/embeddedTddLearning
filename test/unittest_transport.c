@@ -1,75 +1,83 @@
+#if defined(UNIT_TEST) && defined(MSP430)
+
 #include "unittest_transport.h"
-#include "stm32f4xx_hal.h"
 
-#define USARTx USART2
-#define USARTx_CLK_ENABLE() __HAL_RCC_USART2_CLK_ENABLE()
-#define USARTx_CLK_DISABLE() __HAL_RCC_USART2_CLK_DISABLE()
-#define USARTx_RX_GPIO_CLK_ENABLE() __HAL_RCC_GPIOA_CLK_ENABLE()
-#define USARTx_TX_GPIO_CLK_ENABLE() __HAL_RCC_GPIOA_CLK_ENABLE()
-#define USARTx_RX_GPIO_CLK_DISABLE() __HAL_RCC_GPIOA_CLK_DISABLE()
-#define USARTx_TX_GPIO_CLK_DISABLE() __HAL_RCC_GPIOA_CLK_DISABLE()
+#include <stdint.h>
+#include "eusci_a_uart.h"
+#include "msp430fr4133.h"
 
-#define USARTx_FORCE_RESET() __HAL_RCC_USART2_FORCE_RESET()
-#define USARTx_RELEASE_RESET() __HAL_RCC_USART2_RELEASE_RESET()
-
-#define USARTx_TX_PIN GPIO_PIN_2
-#define USARTx_TX_GPIO_PORT GPIOA
-#define USARTx_TX_AF GPIO_AF7_USART2
-#define USARTx_RX_PIN GPIO_PIN_3
-#define USARTx_RX_GPIO_PORT GPIOA
-#define USARTx_RX_AF GPIO_AF7_USART2
-
-static UART_HandleTypeDef UartHandle;
+static void initEusci(void);
 
 void unittest_uart_begin()
 {
-    GPIO_InitTypeDef GPIO_InitStruct;
-
-    USARTx_TX_GPIO_CLK_ENABLE();
-    USARTx_RX_GPIO_CLK_ENABLE();
-
-    USARTx_CLK_ENABLE();
-
-    GPIO_InitStruct.Pin = USARTx_TX_PIN;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-    GPIO_InitStruct.Alternate = USARTx_TX_AF;
-
-    HAL_GPIO_Init(USARTx_TX_GPIO_PORT, &GPIO_InitStruct);
-
-    GPIO_InitStruct.Pin = USARTx_RX_PIN;
-    GPIO_InitStruct.Alternate = USARTx_RX_AF;
-
-    HAL_GPIO_Init(USARTx_RX_GPIO_PORT, &GPIO_InitStruct);
-    UartHandle.Instance = USARTx;
-
-    UartHandle.Init.BaudRate = 115200;
-    UartHandle.Init.WordLength = UART_WORDLENGTH_8B;
-    UartHandle.Init.StopBits = UART_STOPBITS_1;
-    UartHandle.Init.Parity = UART_PARITY_NONE;
-    UartHandle.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-    UartHandle.Init.Mode = UART_MODE_TX_RX;
-    UartHandle.Init.OverSampling = UART_OVERSAMPLING_16;
-
-    if (HAL_UART_Init(&UartHandle) != HAL_OK)
-    {
-        while (1)
-        {
-        }
-    }
+    initEusci();
 }
 
 void unittest_uart_putchar(char c)
 {
-    HAL_UART_Transmit(&UartHandle, (uint8_t *)(&c), 1, 1000);
+    // Transmit Character
+    while (EUSCI_A_UART_queryStatusFlags(EUSCI_A0_BASE, EUSCI_A_UART_BUSY));
+    EUSCI_A_UART_transmitData(EUSCI_A0_BASE, c);
 }
 
-void unittest_uart_flush() {}
+void unittest_uart_flush()
+{
+}
 
 void unittest_uart_end()
 {
-    USARTx_CLK_DISABLE();
-    USARTx_RX_GPIO_CLK_DISABLE();
-    USARTx_TX_GPIO_CLK_DISABLE();
 }
+
+// EUSCI 0
+static void initEusci(void)
+{
+    #if 0
+   // Configure UCA1TXD and UCA1RXD
+  P1SEL0 |= BIT4 | BIT5;
+  P1SEL1 &= ~(BIT4 | BIT5);
+
+  // Configure UART
+  // http://software-dl.ti.com/msp430/msp430_public_sw/mcu/msp430/MSP430BaudRateConverter/index.html
+  // 115 200 bps this value depends on the transmitter used
+   EUSCI_A_UART_initParam param = {0};
+   param.selectClockSource = EUSCI_A_UART_CLOCKSOURCE_SMCLK;
+   param.clockPrescalar = 4;
+   param.firstModReg = 5;
+   param.secondModReg = 85;
+   param.parity = EUSCI_A_UART_NO_PARITY;
+   param.msborLsbFirst = EUSCI_A_UART_LSB_FIRST;
+   param.numberofStopBits = EUSCI_A_UART_ONE_STOP_BIT;
+   param.uartMode = EUSCI_A_UART_MODE;
+   param.overSampling = EUSCI_A_UART_OVERSAMPLING_BAUDRATE_GENERATION;
+
+   if(STATUS_FAIL == EUSCI_A_UART_init(EUSCI_A0_BASE, &param))
+   {
+       return;
+   }
+
+   EUSCI_A_UART_enable(EUSCI_A0_BASE);
+
+   // Interruption
+   EUSCI_A_UART_clearInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT);
+
+   // Enable USCI_A0 RX interrupt
+   EUSCI_A_UART_enableInterrupt(EUSCI_A0_BASE, EUSCI_A_UART_RECEIVE_INTERRUPT); // Enable interrupt
+   #endif
+    PM5CTL0 &= ~LOCKLPM5; // Disable the GPIO power-on default high-impedance mode
+    // to activate previously configured port settings
+    // Configure UART pins
+    P1SEL0 |= BIT0 | BIT1; // set 2-UART pin as second function
+
+    // Configure UART
+    UCA0CTLW0 |= UCSWRST; // Put eUSCI in reset
+    UCA0CTLW0 |= UCSSEL__SMCLK;
+    // Baud Rate calculation
+    UCA0BR0 = 8;        // 1000000/115200 = 8.68
+    UCA0MCTLW = 0xD600; // 1000000/115200 - INT(1000000/115200)=0.68
+    // UCBRSx value = 0xD6 (See UG)
+    UCA0BR1 = 0;
+    UCA0CTLW0 &= ~UCSWRST; // Initialize eUSCI
+    UCA0IE |= UCRXIE;      // Enable USCI_A0 RX interrupt
+}
+
+#endif

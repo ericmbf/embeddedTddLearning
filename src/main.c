@@ -1,25 +1,29 @@
-/*
- * Blink
- * Turns on an LED on for one second,
- * then off for one second, repeatedly.
- */
+#if !UNIT_TEST
+#include "msp430fr4133.h"
 
-#include <Arduino.h>
-
-void setup()
+#define LED1_MASK       0x01
+#define LED2_MASK       0x40
+ 
+int main(void)
 {
-  // initialize LED digital pin as an output.
-  pinMode(RED_LED, OUTPUT);
+    volatile int i = 0;
+ 
+    /* stop watchdog timer */
+    WDTCTL = WDTPW | WDTHOLD;
+ 
+    /* set P1 direction */
+    P1DIR = LED1_MASK | LED2_MASK;
+ 
+    /* leds off */
+    P1OUT = 0x00;
+ 
+    for (;;) {
+ 
+        /* toggle leds */
+        P1OUT ^= (LED1_MASK | LED2_MASK);
+ 
+        /* delay */
+        for (i = 0; i < 10000; i++);
+    }
 }
-
-void loop()
-{
-  // turn the LED on (HIGH is the voltage level)
-  digitalWrite(RED_LED, HIGH);
-  // wait for a second
-  delay(1000);
-  // turn the LED off by making the voltage LOW
-  digitalWrite(RED_LED, LOW);
-  // wait for a second
-  delay(1000);
-}
+#endif

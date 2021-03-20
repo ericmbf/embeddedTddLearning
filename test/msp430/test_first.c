@@ -1,4 +1,4 @@
-#if defined(UNIT_TEST) && !defined(UNO) && !defined(MSP430)
+#if defined(MSP430) && defined(UNIT_TEST)
 
 #include <unity.h>
 #include "mod1.h"
@@ -15,8 +15,10 @@ void test_mod1()
     TEST_ASSERT_EQUAL(mod1_get_a(&o), 18);
 }
 
-int main(int argc, char **argv)
+int main(void)
 {
+    // delay(2000);
+
     UNITY_BEGIN();
 
     RUN_TEST(test_mod1);

@@ -92,7 +92,7 @@ static uint16_t convertLedNumberToBit(int uc_led)
 
 static void updateHardware(void)
 {
-    *gpui_ledAddr = guc_ledImage;
+    *gpui_ledAddr = ~guc_ledImage;
 }
 
 static bool isValidLed(uint8_t uc_led)

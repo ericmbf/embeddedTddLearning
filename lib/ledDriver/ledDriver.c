@@ -18,6 +18,7 @@ typedef enum E_LED_BOUND
 static uint16_t convertLedNumberToBit(int ledNumber);
 static void updateHardware(void);
 static bool isValidLed(uint8_t uc_led);
+static uint16_t invertByteOrder(uint16_t ui_value);
 
 static uint16_t *gpui_ledAddr;
 static uint16_t guc_ledImage;
@@ -92,7 +93,7 @@ static uint16_t convertLedNumberToBit(int uc_led)
 
 static void updateHardware(void)
 {
-    *gpui_ledAddr = ~guc_ledImage;
+    *gpui_ledAddr = invertByteOrder(~guc_ledImage);
 }
 
 static bool isValidLed(uint8_t uc_led)
@@ -106,4 +107,23 @@ static bool isValidLed(uint8_t uc_led)
     }
 
     return b_ret;
+}
+
+static uint16_t invertByteOrder(uint16_t ui_value)
+{
+    uint8_t uc_msb = (ui_value & 0xFF00) >> 8;   
+    uint8_t uc_lsb = ui_value & 0x00FF;
+    uint16_t ui_ret = 0;
+      
+    uc_msb = (uc_msb & 0xF0) >> 4 | (uc_msb & 0x0F) << 4;
+    uc_msb = (uc_msb & 0xCC) >> 2 | (uc_msb & 0x33) << 2;
+    uc_msb = (uc_msb & 0xAA) >> 1 | (uc_msb & 0x55) << 1;
+
+    uc_lsb = (uc_lsb & 0xF0) >> 4 | (uc_lsb & 0x0F) << 4;
+    uc_lsb = (uc_lsb & 0xCC) >> 2 | (uc_lsb & 0x33) << 2;
+    uc_lsb = (uc_lsb & 0xAA) >> 1 | (uc_lsb & 0x55) << 1;
+
+    ui_ret = ((uint16_t) uc_lsb << 8) | uc_msb;
+
+    return ui_ret;
 }

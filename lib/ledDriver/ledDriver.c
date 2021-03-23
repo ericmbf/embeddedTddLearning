@@ -5,8 +5,8 @@
 
 typedef enum E_LED_STATE
 {
-    E_LED_STATE_ALL_ON = ~0,
-    E_LED_STATE_ALL_OFF = ~E_LED_STATE_ALL_ON,
+    E_LED_STATE_ALL_ON = 0xFFFF,
+    E_LED_STATE_ALL_OFF = (uint16_t) ~E_LED_STATE_ALL_ON,
 } E_LED_STATE;
 
 typedef enum E_LED_BOUND
@@ -22,11 +22,18 @@ static uint16_t invertByteOrder(uint16_t ui_value);
 
 static uint16_t *gpui_ledAddr;
 static uint16_t guc_ledImage;
+static bool gb_initZero;
+static bool gb_invertedOrder;
 
-void LedDriver_Create(uint16_t * pui_address)
+void LedDriver_Create(uint16_t * pui_address, bool b_initZero, 
+    bool b_invertedOrder)
 {
     gpui_ledAddr = pui_address;
+    gb_initZero = b_initZero;
+    gb_invertedOrder = b_invertedOrder;
+
     guc_ledImage = E_LED_STATE_ALL_OFF;
+
     updateHardware();
 }
 
@@ -93,7 +100,22 @@ static uint16_t convertLedNumberToBit(int uc_led)
 
 static void updateHardware(void)
 {
-    *gpui_ledAddr = invertByteOrder(~guc_ledImage);
+    if(gb_invertedOrder & gb_initZero)
+    {
+        *gpui_ledAddr = invertByteOrder(guc_ledImage);
+    }
+    else if(gb_invertedOrder)
+    {
+        *gpui_ledAddr = invertByteOrder(~guc_ledImage);
+    }
+    else if(gb_initZero)
+    {
+        *gpui_ledAddr = ~guc_ledImage;
+    }
+    else
+    {
+        *gpui_ledAddr = guc_ledImage;
+    }
 }
 
 static bool isValidLed(uint8_t uc_led)

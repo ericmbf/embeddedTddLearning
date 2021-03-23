@@ -1,3 +1,4 @@
+#if UNIT_TEST
 #include <unity.h>
 #include <unity_fixture.h>
 
@@ -97,3 +98,4 @@ TEST(CircularBuffer, test_removeEmpty)
 {
     TEST_ASSERT_FALSE(CircularBuffer_remove(&gl_popValue));
 }
+#endif

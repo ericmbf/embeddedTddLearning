@@ -1,3 +1,4 @@
+#if UNIT_TEST
 #include "unity.h"
 #include "unity_fixture.h"
 
@@ -11,3 +12,4 @@ TEST_GROUP_RUNNER(CircularBuffer)
     RUN_TEST_CASE(CircularBuffer, test_insertAfterFull);
     RUN_TEST_CASE(CircularBuffer, test_removeFifo);
 }
+#endif

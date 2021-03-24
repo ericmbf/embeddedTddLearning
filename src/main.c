@@ -1,29 +1,42 @@
 #if !UNIT_TEST
-#include "msp430fr4133.h"
+//***************************************************************************************
+//  MSP430 Blink the LED Demo - Software Toggle P1.0
+//
+//  Description; Toggle P1.0 by xor'ing P1.0 inside of a software loop.
+//  ACLK = n/a, MCLK = SMCLK = default DCO
+//
+//                MSP430x5xx
+//             -----------------
+//         /|\|              XIN|-
+//          | |                 |
+//          --|RST          XOUT|-
+//            |                 |
+//            |             P1.0|-->LED
+//
+//  Texas Instruments, Inc
+//  July 2013
+//***************************************************************************************
 
-#define LED1_MASK       0x01
-#define LED2_MASK       0x40
- 
-int main(void)
-{
-    volatile int i = 0;
- 
-    /* stop watchdog timer */
-    WDTCTL = WDTPW | WDTHOLD;
- 
-    /* set P1 direction */
-    P1DIR = LED1_MASK | LED2_MASK;
- 
-    /* leds off */
-    P1OUT = 0x00;
- 
-    for (;;) {
- 
-        /* toggle leds */
-        P1OUT ^= (LED1_MASK | LED2_MASK);
- 
-        /* delay */
-        for (i = 0; i < 10000; i++);
+#include <msp430.h>
+
+void main(void) {
+    WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
+    PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
+                                            // to activate previously configured port settings
+    P1DIR |= 0x01;                          // Set P1.0 to output direction
+    P4DIR |= 0x01;                          // Set P1.0 to output direction
+    P4OUT ^= 0x01;                      // Toggle P4.0 using exclusive-OR
+
+    for(;;) {
+        volatile unsigned long i;            // volatile to prevent optimization
+
+        P1OUT ^= 0x01;                      // Toggle P1.0 using exclusive-OR
+        P4OUT ^= 0x01;                      // Toggle P4.0 using exclusive-OR
+
+        i = 100000;                          // SW Delay
+        do i--;
+        while(i != 0);
     }
 }
+
 #endif

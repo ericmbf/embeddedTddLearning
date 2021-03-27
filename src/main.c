@@ -25,7 +25,6 @@ void main(void) {
                                             // to activate previously configured port settings
     P1DIR |= 0x01;                          // Set P1.0 to output direction
     P4DIR |= 0x01;                          // Set P1.0 to output direction
-    P4OUT ^= 0x01;                      // Toggle P4.0 using exclusive-OR
 
     for(;;) {
         volatile unsigned long i;            // volatile to prevent optimization

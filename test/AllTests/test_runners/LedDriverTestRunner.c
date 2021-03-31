@@ -62,5 +62,9 @@ TEST_GROUP_RUNNER(LedDriver)
     RUN_TEST_CASE(LedDriver, test_isOff);
     RUN_TEST_CASE(LedDriver, test_TurnOffMultipleLeds);
     RUN_TEST_CASE(LedDriver, test_AllOff);
+
+#if MSP430
+    RUN_TEST_CASE(LedDriver, test_ledTurnOnHardware);
+#endif
 }
 #endif

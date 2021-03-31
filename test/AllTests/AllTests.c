@@ -2,7 +2,9 @@
 #include <unity.h>
 #include <unity_fixture.h>
 
+#if MSP430
 #include <msp430.h>
+#endif
 
 static void halInit(void);
 static void delay();
@@ -15,18 +17,22 @@ static void runAllTests(void)
 
 int main(int argc, const char **argv)
 {
+#if MSP430
     halInit();
     
     // NOTE!!! Wait for >2 secs
     // if board doesn't support software reset via Serial.DTR/RTS
     delay();
-
+    
     UnityMain(argc, argv, runAllTests);
 
     P4DIR |= 0x01; // Set P1.0 to output direction
     P4OUT ^= 0x01; // Toggle P4.0 using exclusive-OR
-
     return 0;
+#else
+    return UnityMain(argc, argv, runAllTests);
+#endif
+
 }
 
 static void halInit(void)

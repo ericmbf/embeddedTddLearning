@@ -6,6 +6,10 @@
 #include "RuntimeErrorStub.h"
 #include "LedDriver/LedDriverTest.h"
 
+#if UNIT_TEST && MSP430
+#include "msp430.h"
+#endif
+
 TEST_GROUP(LedDriver);
 
 static uint16_t invertByteOrder(uint16_t uc_value);
@@ -153,6 +157,20 @@ TEST(LedDriver, test_AllOff)
     LedDriver_turnAllOff();
     TEST_ASSERT_EQUAL_HEX16(getExpected(0x00), gui_virtualLeds);
 }
+
+#if UNIT_TEST && MSP430
+TEST(LedDriver, test_ledTurnOnHardware)
+{
+    P4DIR |= 0x01; // Set P1.0 to output direction
+    gui_virtualLeds = P4OUT;
+    gb_initZero = false;
+    gb_invertedOrder = false;
+    LedDriver_Create(&gui_virtualLeds, gb_initZero, gb_invertedOrder);
+    LedDriver_turnOn(1);
+    TEST_ASSERT_EQUAL_HEX16(getExpected(0x01), gui_virtualLeds);
+    TEST_MESSAGE("LED P4.0 should be turn on on the EVM.");
+}
+#endif
 
 void LedDriverTest_setParam(bool b_initZero, bool b_invertedOrder)
 {

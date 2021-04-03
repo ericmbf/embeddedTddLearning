@@ -4,15 +4,18 @@
 
 #if MSP430
 #include <msp430.h>
-#endif
 
 static void halInit(void);
 static void delay();
+#endif
 
 static void runAllTests(void)
 {
-    RUN_TEST_GROUP(LedDriver);
-    RUN_TEST_GROUP(CircularBuffer);
+    // RUN_TEST_GROUP(LedDriver);
+    // RUN_TEST_GROUP(CircularBuffer);
+    RUN_TEST_GROUP(LightControllerSpy);
+    RUN_TEST_GROUP(FakeTimeService);
+    RUN_TEST_GROUP(LightScheduler);
 }
 
 int main(int argc, const char **argv)
@@ -35,6 +38,7 @@ int main(int argc, const char **argv)
 
 }
 
+#if MSP430
 static void halInit(void)
 {
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
@@ -50,5 +54,6 @@ static void delay()
         i--;
     while (i != 0);
 }
+#endif
 
 #endif

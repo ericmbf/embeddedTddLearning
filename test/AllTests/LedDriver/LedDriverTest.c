@@ -2,9 +2,9 @@
 #include <unity_fixture.h>
 #include <unity.h>
 
-#include "ledDriver.h"
+#include "LedDriver.h"
 #include "RuntimeErrorStub.h"
-#include "LedDriver/LedDriverTest.h"
+#include "LedDriverTest.h"
 
 #if UNIT_TEST && MSP430
 #include "msp430.h"

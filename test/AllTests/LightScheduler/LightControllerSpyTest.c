@@ -42,3 +42,11 @@ TEST(LightControllerSpy, RememberTheLastLightIdControlled)
     TEST_ASSERT_EQUAL_INT(10, LightControllerSpy_GetLastId());
     TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightControllerSpy_GetLastState());
 }
+
+TEST(LightControllerSpy, RememberAllLightStates)
+{
+    LightController_On(10);
+    LightController_Off(12);
+    TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightControllerSpy_GetLightState(10));
+    TEST_ASSERT_EQUAL_INT(LIGHT_OFF, LightControllerSpy_GetLightState(12));
+}

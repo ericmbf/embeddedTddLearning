@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stddef.h>
 
 #include "TimeService.h"
 
@@ -10,10 +11,13 @@ enum
     INVALID_MINUTE = -1
 };
 
+static f_wakeup_callback_t gfp_wakeCallback;
+static int gul_periodAlarm = 0;
+
 void TimeService_Create(void)
 {
-    gs_time.dayOfWeek = INVALID_DAY;
-    gs_time.minuteOfDay = INVALID_MINUTE;
+    gs_time.c_dayOfWeek = INVALID_DAY;
+    gs_time.l_minuteOfDay = INVALID_MINUTE;
 }
 
 void TimeService_Destroy(void)
@@ -22,16 +26,43 @@ void TimeService_Destroy(void)
 
 void TimeService_GetTime(Time *time)
 {
-    time->dayOfWeek = gs_time.dayOfWeek;
-    time->minuteOfDay = gs_time.minuteOfDay;
+    time->c_dayOfWeek = gs_time.c_dayOfWeek;
+    time->l_minuteOfDay = gs_time.l_minuteOfDay;
+}
+
+void TimeService_SetPeriodAlarmInSeconds(int seconds, 
+    f_wakeup_callback_t pf_callback)
+{
+    gul_periodAlarm = seconds;
+    gfp_wakeCallback = pf_callback;
+}
+
+void TimeService_CancelPeriodAlarmInSeconds(int seconds, 
+    f_wakeup_callback_t pf_callback)
+{
+    if((pf_callback == gfp_wakeCallback) && (seconds == gul_periodAlarm))
+    {
+        gfp_wakeCallback = NULL;
+        gul_periodAlarm = 0;
+    }
 }
 
 void FakeTimeService_SetMinute(uint32_t ul_min)
 {
-    gs_time.minuteOfDay = ul_min;
+    gs_time.l_minuteOfDay = ul_min;
 }
 
 void FakeTimeService_SetDay(uint8_t uc_day)
 {
-    gs_time.dayOfWeek = uc_day;
+    gs_time.c_dayOfWeek = uc_day;
+}
+
+f_wakeup_callback_t FakeTimeService_GetAlarmCallback(void)
+{
+    return gfp_wakeCallback;
+}
+
+int FakeTimeService_GetAlarmPeriod()
+{
+    return gul_periodAlarm;
 }

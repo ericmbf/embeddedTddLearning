@@ -40,8 +40,8 @@ TEST(FakeTimeService, Create)
 {
     Time time;
     TimeService_GetTime(&time);
-    TEST_ASSERT_EQUAL_INT(TIME_UNKNOWN, time.minuteOfDay);
-    TEST_ASSERT_EQUAL_INT(TIME_UNKNOWN, time.dayOfWeek);
+    TEST_ASSERT_EQUAL_INT(TIME_UNKNOWN, time.l_minuteOfDay);
+    TEST_ASSERT_EQUAL_INT(TIME_UNKNOWN, time.c_dayOfWeek);
 }
 
 TEST(FakeTimeService, Set)
@@ -50,6 +50,6 @@ TEST(FakeTimeService, Set)
     FakeTimeService_SetMinute(42);
     FakeTimeService_SetDay(SATURDAY);
     TimeService_GetTime(&time);
-    TEST_ASSERT_EQUAL_INT(42, time.minuteOfDay);
-    TEST_ASSERT_EQUAL_INT(SATURDAY, time.dayOfWeek);
+    TEST_ASSERT_EQUAL_INT(42, time.l_minuteOfDay);
+    TEST_ASSERT_EQUAL_INT(SATURDAY, time.c_dayOfWeek);
 }

@@ -20,14 +20,19 @@ TEST_TEAR_DOWN(CircularBuffer)
 {
 }
 
-TEST(CircularBuffer, test_insertNewValue)
+TEST(CircularBuffer, Create)
+{
+
+}
+
+TEST(CircularBuffer, insertNewValue)
 {
     CircularBuffer_insert(10);
     CircularBuffer_remove(&gl_popValue);
     TEST_ASSERT_EQUAL_INT32(10, gl_popValue);
 }
 
-TEST(CircularBuffer, test_insertTwoValues)
+TEST(CircularBuffer, insertTwoValues)
 {
     CircularBuffer_insert(10);
     CircularBuffer_insert(20);
@@ -37,14 +42,14 @@ TEST(CircularBuffer, test_insertTwoValues)
     TEST_ASSERT_EQUAL_INT32(20, gl_popValue);
 }
 
-TEST(CircularBuffer, test_insertMoreThanSize)
+TEST(CircularBuffer, insertMoreThanSize)
 {
     CircularBuffer_init((uint8_t*) &gl_arrayBuffer, 1);
     TEST_ASSERT_TRUE(CircularBuffer_insert(10));
     TEST_ASSERT_FALSE(CircularBuffer_insert(20));
 }
 
-TEST(CircularBuffer, test_validPointerInit)
+TEST(CircularBuffer, validPointerInit)
 {
     CircularBuffer_init((uint8_t*) &gl_arrayBuffer, 1);
 
@@ -52,7 +57,7 @@ TEST(CircularBuffer, test_validPointerInit)
     TEST_ASSERT_EQUAL_INT32(10, gl_arrayBuffer[0]);
 }
 
-TEST(CircularBuffer, test_insertAfterRemove)
+TEST(CircularBuffer, insertAfterRemove)
 {
     CircularBuffer_insert(10);
     CircularBuffer_insert(20);
@@ -60,7 +65,7 @@ TEST(CircularBuffer, test_insertAfterRemove)
     TEST_ASSERT_TRUE(CircularBuffer_insert(30));
 }
 
-TEST(CircularBuffer, test_insertAfterFull)
+TEST(CircularBuffer, insertAfterFull)
 {
     int32_t l_expectedArray1[] = {40, 50, 30};
     CircularBuffer_init((uint8_t *)&gl_arrayBuffer, 3);
@@ -74,7 +79,7 @@ TEST(CircularBuffer, test_insertAfterFull)
     TEST_ASSERT_EQUAL_INT32_ARRAY(&l_expectedArray1, &gl_arrayBuffer, 3);
 }
 
-TEST(CircularBuffer, test_removeFifo)
+TEST(CircularBuffer, removeFifo)
 {
     CircularBuffer_init((uint8_t *)&gl_arrayBuffer, 3);
     CircularBuffer_insert(10);
@@ -94,7 +99,7 @@ TEST(CircularBuffer, test_removeFifo)
     TEST_ASSERT_EQUAL_INT32(50, gl_popValue);
 }
 
-TEST(CircularBuffer, test_removeEmpty)
+TEST(CircularBuffer, removeEmpty)
 {
     TEST_ASSERT_FALSE(CircularBuffer_remove(&gl_popValue));
 }

@@ -1,7 +1,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-void CircularBuffer_init(uint8_t *puc_buffer, uint8_t uc_size);
-bool CircularBuffer_insert(int32_t ul_value);
+typedef struct CircularBufferStruct * CircularBuffer;
+
+CircularBuffer CircularBuffer_Create(uint8_t uc_size);
+void CircularBuffer_Destroy(CircularBuffer self);
+int CircularBuffer_Put(CircularBuffer self, int value);
+int CircularBuffer_Get(CircularBuffer);
+int CircularBuffer_Capacity(CircularBuffer);
 bool CircularBuffer_remove(int32_t *pl_value);
-bool CircularBuffer_isFull();
+int CircularBuffer_IsEmpty(CircularBuffer self);
+int CircularBuffer_IsFull(CircularBuffer self);

@@ -5,12 +5,18 @@
 TEST_GROUP_RUNNER(CircularBuffer)
 {
     RUN_TEST_CASE(CircularBuffer, Create);
-    RUN_TEST_CASE(CircularBuffer, insertNewValue);
-    RUN_TEST_CASE(CircularBuffer, insertTwoValues);
-    RUN_TEST_CASE(CircularBuffer, insertMoreThanSize);
-    RUN_TEST_CASE(CircularBuffer, validPointerInit);
-    RUN_TEST_CASE(CircularBuffer, insertAfterRemove);
-    RUN_TEST_CASE(CircularBuffer, insertAfterFull);
-    RUN_TEST_CASE(CircularBuffer, removeFifo);
+    RUN_TEST_CASE(CircularBuffer, EmptyAfterCreation);
+    RUN_TEST_CASE(CircularBuffer, NotFullAfterCreation);
+    RUN_TEST_CASE(CircularBuffer, NotEmpty);
+    RUN_TEST_CASE(CircularBuffer, NotEmptyThenEmpty);
+    RUN_TEST_CASE(CircularBuffer, GetPutOneValue);
+    RUN_TEST_CASE(CircularBuffer, GetPutAFew);
+    RUN_TEST_CASE(CircularBuffer, Capacity);
+    RUN_TEST_CASE(CircularBuffer, IsFull);
+    RUN_TEST_CASE(CircularBuffer, EmptyToFullToEmpty);
+    RUN_TEST_CASE(CircularBuffer, WrapAround);
+    RUN_TEST_CASE(CircularBuffer, PutToFullThrows);
+    RUN_TEST_CASE(CircularBuffer, PutToFullDoesNotDamageContents);
+    RUN_TEST_CASE(CircularBuffer, GetFromEmptyReturns0);
 }
 #endif

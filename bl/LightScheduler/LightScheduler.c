@@ -1,41 +1,47 @@
 #include "LightScheduler.h"
 #include "TimeService.h"
 #include "LightControllerSpy.h"
+#include "RandomMinute.h"
 #include <stdbool.h>
 
 enum
 {
-    UNUSED = -1,
-    TURN_OFF,
     TURN_ON,
-    MAX_EVENTS = 128,
+    TURN_OFF,
+    DIM,
+    RANDOM_ON,
+    RANDOM_OFF
+};
+
+enum
+{
+    MAX_EVENTS = 128, UNUSED = -1
+};
+
+enum
+{
     MAX_LIGHTS = 32
 };
 
-typedef enum Event
-{
-    E_EVENT_UNKNOWN,
-    E_EVENT_TURN_ON,
-    E_EVENT_TURN_OFF,
-} E_EVENT_t;
-
-typedef struct SchedulerLightEvent
+typedef struct ScheduledLightEvent
 {
     int8_t c_id;
     int32_t l_minuteOfDay;
-    E_EVENT_t e_event;
+    int e_event;
     E_DAY_t e_day;
-} SchedulerLightEvent;
+    int randomize;
+    int randomMinutes;
+} ScheduledLightEvent;
 
 static E_LS_T scheduleEvent(int id, E_DAY_t day, int minuteOfDay,
-                          E_EVENT_t e_evt);
+                          int e_evt);
 static void processEventDueNow(Time *ps_time,
-                               SchedulerLightEvent *ps_lightEvent);
-static void operateLight(SchedulerLightEvent *ps_lightEvent);
+                               ScheduledLightEvent *ps_lightEvent);
+static void operateLight(ScheduledLightEvent *ps_lightEvent);
 static bool doesLightRespondToday(Time *ps_time, E_DAY_t e_day);
 
-SchedulerLightEvent gs_schedule;
-SchedulerLightEvent gs_scheduleEvents[MAX_EVENTS];
+ScheduledLightEvent gs_schedule;
+ScheduledLightEvent gs_scheduleEvents[MAX_EVENTS];
 
 void LightScheduler_Create()
 {
@@ -56,12 +62,12 @@ void LightScheduler_Destroy()
 
 E_LS_T LightScheduler_ScheduleTurnOn(int id, E_DAY_t day, int minuteOfDay)
 {
-    return scheduleEvent(id, day, minuteOfDay, E_EVENT_TURN_ON);
+    return scheduleEvent(id, day, minuteOfDay, TURN_ON);
 }
 
 E_LS_T LightScheduler_ScheduleTurnOff(int id, E_DAY_t day, int minuteOfDay)
 {
-    return scheduleEvent(id, day, minuteOfDay, E_EVENT_TURN_OFF);
+    return scheduleEvent(id, day, minuteOfDay, TURN_OFF);
 }
 
 E_LS_T LightScheduler_ScheduleRemove(int id, E_DAY_t day, int minuteOfDay)
@@ -77,7 +83,7 @@ E_LS_T LightScheduler_ScheduleRemove(int id, E_DAY_t day, int minuteOfDay)
         }
     }
     
-    return E_EVENT_UNKNOWN;
+    return E_LS_EVENT_DOESNT_EXIST;
 }
 
 
@@ -94,8 +100,22 @@ void LightScheduler_WakeUp(void)
     }
 }
 
+void LightScheduler_Randomize(int id, E_DAY_t day, int minuteOfDay)
+{
+    int i;
+    for (i = 0; i < MAX_EVENTS; i++)
+    {
+        ScheduledLightEvent *e = &gs_scheduleEvents[i];
+        if (e->c_id == id && e->e_day == day && e->l_minuteOfDay == minuteOfDay)
+        {
+            e->randomize = RANDOM_ON;
+            e->randomMinutes = RandomMinute_Get();
+        }
+    }
+}
+
 static E_LS_T scheduleEvent(int id, E_DAY_t day, int minuteOfDay, 
-    E_EVENT_t e_evt)
+    int e_evt)
 {
     uint8_t uc_idx;
 
@@ -112,6 +132,8 @@ static E_LS_T scheduleEvent(int id, E_DAY_t day, int minuteOfDay,
             gs_scheduleEvents[uc_idx].l_minuteOfDay = minuteOfDay;
             gs_scheduleEvents[uc_idx].e_event = e_evt;
             gs_scheduleEvents[uc_idx].e_day = day;
+            gs_scheduleEvents[uc_idx].randomize = TURN_OFF;
+            gs_scheduleEvents[uc_idx].randomMinutes = 0;
             
             return E_LS_OK;
         }
@@ -121,25 +143,26 @@ static E_LS_T scheduleEvent(int id, E_DAY_t day, int minuteOfDay,
 }
 
 static void processEventDueNow(Time *ps_time,
-                               SchedulerLightEvent *ps_lightEvent)
+                               ScheduledLightEvent *ps_lightEvent)
 {
     if (ps_lightEvent->c_id == UNUSED)
         return;
     if (!doesLightRespondToday(ps_time, ps_lightEvent->e_day))
         return;
-    if (ps_time->l_minuteOfDay != ps_lightEvent->l_minuteOfDay)
+    if (!(ps_time->l_minuteOfDay >= 
+        ps_lightEvent->l_minuteOfDay + ps_lightEvent->randomMinutes))
         return;
 
     operateLight(ps_lightEvent);
 }
 
-static void operateLight(SchedulerLightEvent *ps_lightEvent)
+static void operateLight(ScheduledLightEvent *ps_lightEvent)
 {
-    if (E_EVENT_TURN_ON == ps_lightEvent->e_event)
+    if(TURN_ON == ps_lightEvent->e_event)
     {
         LightController_On(ps_lightEvent->c_id);
     }
-    else if (E_EVENT_TURN_OFF == ps_lightEvent->e_event)
+    else if(TURN_OFF == ps_lightEvent->e_event)
     {
         LightController_Off(ps_lightEvent->c_id);
     }

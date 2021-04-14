@@ -35,3 +35,4 @@ void LightScheduler_ScreduleTurnOn(uint8_t uc_id, E_DAYWEEK_t e_day,
     uint32_t ul_time);
 #endif
 void LightScheduler_WakeUp(void);
+void LightScheduler_Randomize(int id, E_DAY_t day, int minuteOfDay);

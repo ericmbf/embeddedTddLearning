@@ -6,6 +6,7 @@
 #include "LightSchedulerTest.h"
 #include "LightControllerSpy.h"
 #include "TimeService.h"
+#include "FakeRandomMinute.h"
 
 #if UNIT_TEST && MSP430
 #include "msp430.h"
@@ -13,6 +14,7 @@
 
 static void setTimeTo(int day, int minuteOfDay);
 static void checkLightState(int id, int state);
+static int (*savedRandomMinute_get)(void);
 
 TEST_GROUP(LightScheduler);
 
@@ -274,6 +276,42 @@ TEST(LightSchedulerInitAndCleanup, DestroyCancelsOneMinuteAlarm)
     LightScheduler_Destroy();
     TEST_ASSERT_POINTERS_EQUAL(NULL, (void*)FakeTimeService_GetAlarmCallback());
     TEST_ASSERT_EQUAL_INT(0, FakeTimeService_GetAlarmPeriod());
+}
+
+TEST_GROUP(LightSchedulerRandomize);
+
+TEST_SETUP(LightSchedulerRandomize)
+{
+    LightController_Create();
+    LightScheduler_Create();
+    UT_PTR_SET(RandomMinute_Get, savedRandomMinute_get);
+    RandomMinute_Get = FakeRandomMinute_Get;
+}
+
+TEST_TEAR_DOWN(LightSchedulerRandomize)
+{
+    LightScheduler_Destroy();
+    LightController_Destroy();
+}
+
+TEST(LightSchedulerRandomize, TurnsOnEarly)
+{
+    FakeRandomMinute_SetFirstAndIncrement(-10, 5);
+    LightScheduler_ScheduleTurnOn(4, EVERYDAY, 600);
+    LightScheduler_Randomize(4, EVERYDAY, 600);
+    setTimeTo(MONDAY, 600-10);
+    LightScheduler_WakeUp();
+    checkLightState(4, LIGHT_ON);
+}
+
+TEST(LightSchedulerRandomize, TurnsOnAfterTime)
+{
+    FakeRandomMinute_SetFirstAndIncrement(-10, 5);
+    LightScheduler_ScheduleTurnOn(4, EVERYDAY, 600);
+    LightScheduler_Randomize(4, EVERYDAY, 600);
+    setTimeTo(MONDAY, 600);
+    LightScheduler_WakeUp();
+    checkLightState(4, LIGHT_ON);
 }
 
 #if 0

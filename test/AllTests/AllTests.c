@@ -13,9 +13,11 @@ static void runAllTests(void)
 {
     // RUN_TEST_GROUP(LedDriver);
     // RUN_TEST_GROUP(CircularBuffer);
-    RUN_TEST_GROUP(LightControllerSpy);
-    RUN_TEST_GROUP(FakeTimeService);
+    // RUN_TEST_GROUP(LightControllerSpy);
+    // RUN_TEST_GROUP(FakeTimeService);
     RUN_TEST_GROUP(LightScheduler);
+    RUN_TEST_GROUP(RandomMinute);
+
 }
 
 int main(int argc, const char **argv)

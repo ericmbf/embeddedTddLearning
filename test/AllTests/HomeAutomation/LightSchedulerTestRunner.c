@@ -28,6 +28,8 @@ TEST_GROUP_RUNNER(LightScheduler)
     RUN_TEST_CASE(LightScheduler, RejectsInvalidLightIds);
     RUN_TEST_CASE(LightSchedulerInitAndCleanup, CreateStartsOneMinuteAlarm);
     RUN_TEST_CASE(LightSchedulerInitAndCleanup, DestroyCancelsOneMinuteAlarm);
+    RUN_TEST_CASE(LightSchedulerRandomize, TurnsOnEarly);
+    RUN_TEST_CASE(LightSchedulerRandomize, TurnsOnAfterTime);
 
     // RUN_TEST_CASE(LightScheduler, ScheduleOnEverydayNotTimeYet);
 }

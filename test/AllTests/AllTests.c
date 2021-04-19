@@ -18,6 +18,7 @@ static void runAllTests(void)
     RUN_TEST_GROUP(LightScheduler);
     RUN_TEST_GROUP(RandomMinute);
     RUN_TEST_GROUP(FormatOutputSpy);
+    RUN_TEST_GROUP(CircularBufferPrint);
 }
 
 int main(int argc, const char **argv)

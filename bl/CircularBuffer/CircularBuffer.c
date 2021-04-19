@@ -2,6 +2,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "Utils.h"
+
+#define MAX_COLUMN                      6
 
 typedef struct CircularBufferStruct
 {
@@ -83,4 +86,62 @@ bool CircularBuffer_remove(int32_t *pl_value)
 bool CircularBuffer_isFull()
 {
     return false;
+}
+
+void CircularBuffer_Print(CircularBuffer self)
+{
+    int i;
+    int currentValue;
+
+    currentValue = self->outdex;
+
+    FormatOutput("Circular buffer content:\n<");
+
+    for (i = 0; i < self->count; i++) {
+        if (i != 0)
+            FormatOutput(", ");
+        FormatOutput("%d", self->values[currentValue++]);
+        if (currentValue >= self->capacity)
+            currentValue = 0;
+    }
+
+    FormatOutput(">\n");
+}
+
+void CircularBuffer_PrintInColumn(CircularBuffer self, int width)
+{
+    int i;
+    int currentValue;
+
+    width = (width < 2) ? 2 : width;
+    
+    currentValue = self->outdex;
+
+    FormatOutput("Circular buffer content:\n<");
+
+    for (i = 0; i < self->count; i++)
+    {
+        FormatOutput("%06d", self->values[currentValue++]);
+
+        if ((i + 1) == self->count)
+        {
+            break;
+        }
+        else
+        {
+            if (((i + 1) % width) == 0)
+            {
+                FormatOutput("\n ");
+            }
+            else
+            {
+                FormatOutput(", ");
+            }
+        }
+
+        if (currentValue >= self->capacity)
+            currentValue = 0;
+    }
+
+    FormatOutput(">\n");
 }

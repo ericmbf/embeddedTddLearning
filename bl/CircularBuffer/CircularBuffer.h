@@ -11,3 +11,5 @@ int CircularBuffer_Capacity(CircularBuffer);
 bool CircularBuffer_remove(int32_t *pl_value);
 int CircularBuffer_IsEmpty(CircularBuffer self);
 int CircularBuffer_IsFull(CircularBuffer self);
+void CircularBuffer_Print(CircularBuffer);
+void CircularBuffer_PrintInColumn(CircularBuffer self, int width);

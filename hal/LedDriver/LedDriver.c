@@ -15,9 +15,9 @@ typedef enum E_LED_BOUND
     E_LED_BOUND_MAX = 16,
 } E_LED_BOUND;
 
-static uint16_t convertLedNumberToBit(int ledNumber);
+static uint16_t convertLedNumberToBit(int32_t l_led);
 static void updateHardware(void);
-static bool isValidLed(uint8_t uc_led);
+static bool isValidLed(int32_t l_led);
 static uint16_t invertByteOrder(uint16_t ui_value);
 
 static uint16_t *gpui_ledAddr;
@@ -42,20 +42,20 @@ void LedDriver_Destroy(void)
 
 }
 
-void LedDriver_turnOn(uint8_t uc_led)
+void LedDriver_turnOn(int32_t l_led)
 {   
-    if(isValidLed(uc_led))
+    if(isValidLed(l_led))
     {
-        guc_ledImage |= convertLedNumberToBit(uc_led);
+        guc_ledImage |= convertLedNumberToBit(l_led);
         updateHardware();
     }
 }
 
-void LedDriver_turnOff(uint8_t uc_led)
+void LedDriver_turnOff(int32_t l_led)
 {
-    if(isValidLed(uc_led))
+    if(isValidLed(l_led))
     {
-        guc_ledImage &= ~convertLedNumberToBit(uc_led);
+        guc_ledImage &= ~convertLedNumberToBit(l_led);
         updateHardware();
     }
 }
@@ -66,24 +66,24 @@ void LedDriver_turnAllOn(void)
     updateHardware();
 }
 
-bool LedDriver_isOn(uint8_t uc_led)
+bool LedDriver_isOn(int32_t l_led)
 {
-    if(!isValidLed(uc_led))
+    if(!isValidLed(l_led))
     {
         return false;
     }
     
-    return guc_ledImage & (convertLedNumberToBit(uc_led));
+    return guc_ledImage & (convertLedNumberToBit(l_led));
 }
 
-bool LedDriver_isOff(uint8_t uc_led)
+bool LedDriver_isOff(int32_t l_led)
 {
-    if(!isValidLed(uc_led))
+    if(!isValidLed(l_led))
     {
         return false;
     }
 
-    return !LedDriver_isOn(uc_led);
+    return !LedDriver_isOn(l_led);
 }
 
 void LedDriver_turnAllOff(void)
@@ -93,9 +93,9 @@ void LedDriver_turnAllOff(void)
 }
 
 
-static uint16_t convertLedNumberToBit(int uc_led)
+static uint16_t convertLedNumberToBit(int32_t l_led)
 {
-    return 1 << (uc_led - 1);
+    return 1 << (l_led - 1);
 }
 
 static void updateHardware(void)
@@ -118,13 +118,13 @@ static void updateHardware(void)
     }
 }
 
-static bool isValidLed(uint8_t uc_led)
+static bool isValidLed(int32_t l_led)
 {
     bool b_ret = true;
 
-    if(uc_led <= E_LED_BOUND_MIN || uc_led > E_LED_BOUND_MAX)
+    if(l_led <= E_LED_BOUND_MIN || l_led > E_LED_BOUND_MAX)
     {
-        RUNTIME_ERROR("LED Driver: out-of-bounds LED", uc_led);
+        RUNTIME_ERROR("LED Driver: out-of-bounds LED", l_led);
         b_ret = false;
     }
 

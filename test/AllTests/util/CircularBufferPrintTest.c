@@ -19,8 +19,6 @@
 #include "CircularBuffer.h"
 #include "FormatOutputSpy.h"
 
-static void putManyInTheBuffer(int seed, int howMany);
-
 static CircularBuffer buffer;
 static const char * expectedOutput;
 static const char * actualOutput;
@@ -185,28 +183,6 @@ TEST(CircularBufferPrint, PrintMultipliesLineMinWidthAllowed)
     CircularBuffer_Destroy(b);
 }
 
-TEST(CircularBufferPrint, PrintMultipliesLineMinWidthAllowed)
-{
-    expectedOutput =
-        "Circular buffer content:\n" \
-        "<000201, 000202\n" \
-        " 000203, 000204\n" \
-        " 000205, 000206>\n";
-
-    CircularBuffer b = CircularBuffer_Create(6);
-    CircularBuffer_Put(b, 201);
-    CircularBuffer_Put(b, 202);
-    CircularBuffer_Put(b, 203);
-    CircularBuffer_Put(b, 204);
-    CircularBuffer_Put(b, 205);
-    CircularBuffer_Put(b, 206);
-
-    CircularBuffer_PrintInColumn(b, 1);
-
-    STRCMP_EQUAL(expectedOutput, actualOutput);
-    CircularBuffer_Destroy(b);
-}
-
 TEST(CircularBufferPrint, PrintMultipliesLineCountWidth)
 {
     expectedOutput =
@@ -221,10 +197,4 @@ TEST(CircularBufferPrint, PrintMultipliesLineCountWidth)
 
     STRCMP_EQUAL(expectedOutput, actualOutput);
     CircularBuffer_Destroy(b);
-}
-
-static void putManyInTheBuffer(int seed, int howMany)
-{
-    for (int i = 0; i < howMany; i++)
-        CircularBuffer_Put(buffer, i+seed);
 }

@@ -1,12 +1,14 @@
 #include <stdint.h>
 #include "LightControllerSpy.h"
 #include <string.h>
+#include "LightDriver.h"
 
 static int lastId;
 static int lastState;
 
 static int g_ledState[32];
 
+#if 0
 void LightController_Create(void)
 {
     lastId = LIGHT_ID_UNKNOWN;
@@ -32,6 +34,7 @@ void LightController_Off(int id)
     lastState = LIGHT_OFF;
     g_ledState[id] = LIGHT_OFF;
 }
+#endif
 
 int LightControllerSpy_GetLastId(void)
 {

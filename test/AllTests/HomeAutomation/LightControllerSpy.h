@@ -2,6 +2,11 @@
 
 enum
 {
+    MAX_LIGHTS = 32
+};
+
+enum
+{
     LIGHT_ID_UNKNOWN = -1,
     LIGHT_STATE_UNKNOWN = -1,
     LIGHT_OFF = 0,

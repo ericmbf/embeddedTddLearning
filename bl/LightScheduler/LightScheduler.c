@@ -1,6 +1,6 @@
 #include "LightScheduler.h"
 #include "TimeService.h"
-#include "LightControllerSpy.h"
+#include "LightController.h"
 #include "RandomMinute.h"
 #include <stdbool.h>
 
@@ -16,11 +16,6 @@ enum
 enum
 {
     MAX_EVENTS = 128, UNUSED = -1
-};
-
-enum
-{
-    MAX_LIGHTS = 32
 };
 
 typedef struct ScheduledLightEvent
@@ -160,11 +155,11 @@ static void operateLight(ScheduledLightEvent *ps_lightEvent)
 {
     if(TURN_ON == ps_lightEvent->e_event)
     {
-        LightController_On(ps_lightEvent->c_id);
+        LightController_TurnOn(ps_lightEvent->c_id);
     }
     else if(TURN_OFF == ps_lightEvent->e_event)
     {
-        LightController_Off(ps_lightEvent->c_id);
+        LightController_TurnOff(ps_lightEvent->c_id);
     }
 }
 

@@ -19,8 +19,9 @@ static void runAllTests(void)
     // RUN_TEST_GROUP(RandomMinute);
     // RUN_TEST_GROUP(FormatOutputSpy);
     // RUN_TEST_GROUP(CircularBufferPrint);
-    RUN_TEST_GROUP(Flash);
-    RUN_TEST_GROUP(FakeMicroTime);
+    // RUN_TEST_GROUP(Flash);
+    // RUN_TEST_GROUP(FakeMicroTime);
+    RUN_TEST_GROUP(LightController);
 }
 
 int main(int argc, const char **argv)

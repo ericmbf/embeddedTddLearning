@@ -16,40 +16,26 @@
 //-    www.renaissancesoftware.net james@renaissancesoftware.net      
 //- ------------------------------------------------------------------
 #include "unity_fixture.h"
-#include "LightControllerSpy.h"
+#include "LightController.h"
+#include "LightDriverSpy.h"
 
-#if 0
+TEST_GROUP(LightController);
 
-TEST_GROUP(LightControllerSpy);
-   
-TEST_SETUP(LightControllerSpy)
+static LightDriver spy;
+
+TEST_SETUP(LightController)
 {
     LightController_Create();
+    LightDriverSpy_AddSpiesToController();
 }
 
-TEST_TEAR_DOWN(LightControllerSpy)
+TEST_TEAR_DOWN(LightController)
 {
     LightController_Destroy();
 }
 
-TEST(LightControllerSpy, Create)
+TEST(LightController, TurnOn)
 {
-    TEST_ASSERT_EQUAL_INT(LIGHT_ID_UNKNOWN, LightControllerSpy_GetLastId());
-    TEST_ASSERT_EQUAL_INT(LIGHT_STATE_UNKNOWN, LightControllerSpy_GetLastState());
+	LightController_TurnOn(7);
+	TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightDriverSpy_GetState(7));
 }
-
-TEST(LightControllerSpy, RememberTheLastLightIdControlled)
-{
-    LightController_On(10);
-    TEST_ASSERT_EQUAL_INT(10, LightControllerSpy_GetLastId());
-    TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightControllerSpy_GetLastState());
-}
-
-TEST(LightControllerSpy, RememberAllLightStates)
-{
-    LightController_On(10);
-    LightController_Off(12);
-    TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightControllerSpy_GetLightState(10));
-    TEST_ASSERT_EQUAL_INT(LIGHT_OFF, LightControllerSpy_GetLightState(12));
-}
-#endif

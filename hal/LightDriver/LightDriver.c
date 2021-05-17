@@ -24,30 +24,36 @@
 /*-    www.renaissancesoftware.net james@renaissancesoftware.net       -*/
 /*- ------------------------------------------------------------------ -*/
 
-#ifndef D_LightDriverSpy_H
-#define D_LightDriverSpy_H
-
 #include "LightDriver.h"
-#include "LightController.h"
+#include "common.h"
 
-LightDriver LightDriverSpy_Create(int id);
-void LightDriverSpy_InstallInterface(void);
+static LightDriverInterface interface = NULL;
 
-void LightDriverSpy_Destroy(LightDriver);
-void LightDriverSpy_TurnOn(LightDriver);
-void LightDriverSpy_TurnOff(LightDriver);
+void LightDriver_SetInterface(LightDriverInterface i)
+{
+    interface = i;
+}
 
-/* Functions just needed by the spy */
-void LightDriverSpy_Reset(void);
-int LightDriverSpy_GetState(int id);
-int LightDriverSpy_GetLastId(void);
-int LightDriverSpy_GetLastState(void);
-void LightDriverSpy_AddSpiesToController(void);
+void LightDriver_Destroy(LightDriver self)
+{
+    if (self && self->vtable && self->vtable->Destroy)
+    {
+        self->vtable->Destroy(self);
+    }
+}
 
-enum {
-    LIGHT_ID_UNKNOWN = -1, LIGHT_STATE_UNKNOWN = -1,
-    LIGHT_OFF = 0, LIGHT_ON = 1
-};
+void LightDriver_TurnOn(LightDriver self)
+{
+    if (self && self->vtable && self->vtable->TurnOn)
+    {
+        self->vtable->TurnOn(self);
+    }
+}
 
-
-#endif  /* D_LightDriverSpy_H */
+void LightDriver_TurnOff(LightDriver self)
+{
+    if (self && self->vtable && self->vtable->TurnOff)
+    {
+        self->vtable->TurnOff(self);
+    }
+}

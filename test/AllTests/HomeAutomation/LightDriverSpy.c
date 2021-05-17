@@ -36,9 +36,22 @@ typedef struct LightDriverSpyStruct
     LightDriverStruct base;
 } LightDriverSpyStruct;
 
+static void save(int id, int state);
+static void destroy(LightDriver base);
+static void update(int id, int state);
+static void turnOn(LightDriver base);
+static void turnOff(LightDriver base);
+
 static int states[MAX_LIGHTS];
 static int lastId;
 static int lastState;
+
+static LightDriverInterfaceStruct interface =
+{
+    .Destroy = destroy,
+    .TurnOn = turnOn,
+    .TurnOff = turnOff
+};
 
 void LightDriverSpy_Reset(void)
 {
@@ -53,20 +66,19 @@ void LightDriverSpy_Reset(void)
 
 void LightDriverSpy_AddSpiesToController(void)
 {
-#if 0
     int i;
     for (i = 0; i < MAX_LIGHTS; i++)
     {
         LightDriver spy = (LightDriver)LightDriverSpy_Create(i);
         LightController_Add(i, spy);
     }
-#endif
 }
 
 LightDriver LightDriverSpy_Create(int id)
 {
     LightDriverSpy self = calloc(1, sizeof(LightDriverSpyStruct));
-    self->base.type = TestLightDriver;
+    self->base.vtable = &interface;
+    self->base.type = "Spy";
     self->base.id = id;
     return (LightDriver)self;
 }
@@ -76,13 +88,6 @@ void LightDriverSpy_Destroy(LightDriver super)
     LightDriverSpy self = (LightDriverSpy)super;
     states[self->base.id] = LIGHT_STATE_UNKNOWN;
     free(self);
-}
-
-static void save(int id, int state)
-{
-    states[id] = state;
-    lastId = id;
-    lastState = state;
 }
 
 void LightDriverSpy_TurnOn(LightDriver super)
@@ -112,3 +117,35 @@ int LightDriverSpy_GetLastState(void)
     return lastState;
 }
 
+void LightDriverSpy_InstallInterface(void)
+{
+    LightDriver_SetInterface(&interface);
+}
+
+static void save(int id, int state)
+{
+    states[id] = state;
+    lastId = id;
+    lastState = state;
+}
+
+static void destroy(LightDriver base)
+{
+    free(base);
+}
+static void update(int id, int state)
+{
+    states[id] = state;
+    lastId = id;
+    lastState = state;
+}
+static void turnOn(LightDriver base)
+{
+    LightDriverSpy self = (LightDriverSpy)base;
+    update(self->base.id, LIGHT_ON);
+}
+static void turnOff(LightDriver base)
+{
+    LightDriverSpy self = (LightDriverSpy)base;
+    update(self->base.id, LIGHT_OFF);
+}

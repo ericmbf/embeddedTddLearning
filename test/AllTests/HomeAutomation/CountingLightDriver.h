@@ -24,30 +24,15 @@
 /*-    www.renaissancesoftware.net james@renaissancesoftware.net       -*/
 /*- ------------------------------------------------------------------ -*/
 
-#ifndef D_LightDriverSpy_H
-#define D_LightDriverSpy_H
+
+#ifndef D_CountingLightDriver_H
+#define D_CountingLightDriver_H
 
 #include "LightDriver.h"
-#include "LightController.h"
 
-LightDriver LightDriverSpy_Create(int id);
-void LightDriverSpy_InstallInterface(void);
+LightDriver CountingLightDriver_Create(int id);
 
-void LightDriverSpy_Destroy(LightDriver);
-void LightDriverSpy_TurnOn(LightDriver);
-void LightDriverSpy_TurnOff(LightDriver);
+/* Functions just needed by tests */
+int CountingLightDriver_GetCallCount(LightDriver);
 
-/* Functions just needed by the spy */
-void LightDriverSpy_Reset(void);
-int LightDriverSpy_GetState(int id);
-int LightDriverSpy_GetLastId(void);
-int LightDriverSpy_GetLastState(void);
-void LightDriverSpy_AddSpiesToController(void);
-
-enum {
-    LIGHT_ID_UNKNOWN = -1, LIGHT_STATE_UNKNOWN = -1,
-    LIGHT_OFF = 0, LIGHT_ON = 1
-};
-
-
-#endif  /* D_LightDriverSpy_H */
+#endif  /* D_CountingLightDriver_H */

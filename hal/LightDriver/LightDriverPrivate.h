@@ -24,30 +24,23 @@
 /*-    www.renaissancesoftware.net james@renaissancesoftware.net       -*/
 /*- ------------------------------------------------------------------ -*/
 
-#ifndef D_LightDriverSpy_H
-#define D_LightDriverSpy_H
+#ifndef D_LightDriverPrivate_H
+#define D_LightDriverPrivate_H
 
-#include "LightDriver.h"
-#include "LightController.h"
+typedef struct LightDriverInterfaceStruct * LightDriverInterface;
 
-LightDriver LightDriverSpy_Create(int id);
-void LightDriverSpy_InstallInterface(void);
+typedef struct LightDriverStruct
+{
+    LightDriverInterface vtable;
+    const char * type;
+    int id;
+} LightDriverStruct;
 
-void LightDriverSpy_Destroy(LightDriver);
-void LightDriverSpy_TurnOn(LightDriver);
-void LightDriverSpy_TurnOff(LightDriver);
+typedef struct LightDriverInterfaceStruct
+{
+    void (*TurnOn)(LightDriver);
+    void (*TurnOff)(LightDriver);
+    void (*Destroy)(LightDriver);
+} LightDriverInterfaceStruct;
 
-/* Functions just needed by the spy */
-void LightDriverSpy_Reset(void);
-int LightDriverSpy_GetState(int id);
-int LightDriverSpy_GetLastId(void);
-int LightDriverSpy_GetLastState(void);
-void LightDriverSpy_AddSpiesToController(void);
-
-enum {
-    LIGHT_ID_UNKNOWN = -1, LIGHT_STATE_UNKNOWN = -1,
-    LIGHT_OFF = 0, LIGHT_ON = 1
-};
-
-
-#endif  /* D_LightDriverSpy_H */
+#endif  /* D_LightDriverPrivate_H */

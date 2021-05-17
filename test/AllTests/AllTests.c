@@ -22,6 +22,8 @@ static void runAllTests(void)
     // RUN_TEST_GROUP(Flash);
     // RUN_TEST_GROUP(FakeMicroTime);
     RUN_TEST_GROUP(LightController);
+    RUN_TEST_GROUP(LightDriverSpy);
+    RUN_TEST_GROUP(LightDriver);
 }
 
 int main(int argc, const char **argv)

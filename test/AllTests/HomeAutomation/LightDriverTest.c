@@ -16,48 +16,56 @@
 //-    www.renaissancesoftware.net james@renaissancesoftware.net      
 //- ------------------------------------------------------------------
 #include "unity_fixture.h"
-#include "LightController.h"
-#include "LightDriverSpy.h"
-#include "CountingLightDriver.h"
+#include "LightDriver.h"
 
-TEST_GROUP(LightController);
+#define NONSENSE_POINTER (LightDriver)~0
 
-static LightDriver spy;
+static void shouldNotBeCalled(LightDriver self);
 
-TEST_SETUP(LightController)
+static LightDriver savedDriver = NONSENSE_POINTER;
+
+static LightDriverInterfaceStruct interface =
 {
-    LightController_Create();
-    LightDriverSpy_AddSpiesToController();
-    LightDriverSpy_InstallInterface();
-    LightDriverSpy_Reset();
+    shouldNotBeCalled,
+    shouldNotBeCalled,
+    shouldNotBeCalled
+};
+
+static LightDriverStruct testDriver =
+{
+    "testDriver",
+    13
+};
+
+TEST_GROUP(LightDriver);
+
+TEST_SETUP(LightDriver)
+{
 }
 
-TEST_TEAR_DOWN(LightController)
+TEST_TEAR_DOWN(LightDriver)
 {
-    LightController_Destroy();
 }
 
-TEST(LightController, TurnOn)
+TEST(LightDriver, NullDriverDoesNotCrash)
 {
-	LightController_TurnOn(7);
-	TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightDriverSpy_GetState(7));
+    LightDriver_SetInterface(&interface);
+    LightDriver_TurnOn(NULL);
+    LightDriver_TurnOff(NULL);
+    LightDriver_Destroy(NULL);
+    TEST_ASSERT_POINTERS_EQUAL(NONSENSE_POINTER, savedDriver);
 }
 
-TEST(LightController, AddingDriverDestroysPrevious)
+TEST(LightDriver, NullInterfaceDoesNotCrash)
 {
-    LightDriver spy = LightDriverSpy_Create(1);
-    LightController_Add(1, spy);
-    LightController_Destroy();
+    LightDriver_SetInterface(NULL);
+    LightDriver_TurnOn(&testDriver);
+    LightDriver_TurnOff(&testDriver);
+    LightDriver_Destroy(&testDriver);
+    TEST_ASSERT_POINTERS_EQUAL(NONSENSE_POINTER, savedDriver);
 }
 
-TEST(LightController, turnOnDifferentDriverTypes)
+static void shouldNotBeCalled(LightDriver self)
 {
-    LightDriver otherDriver = CountingLightDriver_Create(5);
-    LightController_Add(5, otherDriver);
-    LightController_TurnOn(7);
-    LightController_TurnOn(5);
-    LightController_TurnOff(5);
-	
-    TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightDriverSpy_GetState(7));
-    TEST_ASSERT_EQUAL_INT(2, CountingLightDriver_GetCallCount(otherDriver));
+    savedDriver = self;
 }

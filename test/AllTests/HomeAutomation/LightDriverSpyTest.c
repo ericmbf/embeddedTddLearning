@@ -16,48 +16,57 @@
 //-    www.renaissancesoftware.net james@renaissancesoftware.net      
 //- ------------------------------------------------------------------
 #include "unity_fixture.h"
-#include "LightController.h"
 #include "LightDriverSpy.h"
-#include "CountingLightDriver.h"
 
-TEST_GROUP(LightController);
+TEST_GROUP(LightDriverSpy);
 
-static LightDriver spy;
+static LightDriver lightDriverSpy;
 
-TEST_SETUP(LightController)
+TEST_SETUP(LightDriverSpy)
 {
-    LightController_Create();
-    LightDriverSpy_AddSpiesToController();
-    LightDriverSpy_InstallInterface();
     LightDriverSpy_Reset();
+    lightDriverSpy = LightDriverSpy_Create(1);
+    LightDriverSpy_InstallInterface();
 }
 
-TEST_TEAR_DOWN(LightController)
+TEST_TEAR_DOWN(LightDriverSpy)
 {
-    LightController_Destroy();
+    LightDriverSpy_Destroy(lightDriverSpy);
 }
 
-TEST(LightController, TurnOn)
+TEST(LightDriverSpy, Create)
 {
-	LightController_TurnOn(7);
-	TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightDriverSpy_GetState(7));
+    LONGS_EQUAL(LIGHT_STATE_UNKNOWN, LightDriverSpy_GetState(1));
 }
 
-TEST(LightController, AddingDriverDestroysPrevious)
+TEST(LightDriverSpy, On)
 {
-    LightDriver spy = LightDriverSpy_Create(1);
-    LightController_Add(1, spy);
-    LightController_Destroy();
+    // LightDriverSpy_TurnOn(lightDriverSpy);
+    LightDriver_TurnOn(lightDriverSpy);
+    LONGS_EQUAL(LIGHT_ON, LightDriverSpy_GetState(1));
 }
 
-TEST(LightController, turnOnDifferentDriverTypes)
+TEST(LightDriverSpy, LightStateUnknownAfterCreate)
 {
-    LightDriver otherDriver = CountingLightDriver_Create(5);
-    LightController_Add(5, otherDriver);
-    LightController_TurnOn(7);
-    LightController_TurnOn(5);
-    LightController_TurnOff(5);
-	
-    TEST_ASSERT_EQUAL_INT(LIGHT_ON, LightDriverSpy_GetState(7));
-    TEST_ASSERT_EQUAL_INT(2, CountingLightDriver_GetCallCount(otherDriver));
+    LONGS_EQUAL(LIGHT_STATE_UNKNOWN, LightDriverSpy_GetState(1));
+}
+
+TEST(LightDriverSpy, Off)
+{
+    LightDriver_TurnOff(lightDriverSpy);
+    LONGS_EQUAL(LIGHT_OFF, LightDriverSpy_GetState(1));
+}
+
+TEST(LightDriverSpy, RecordsLastIdLastTurnOn)
+{
+    LightDriver_TurnOff(lightDriverSpy);
+    LONGS_EQUAL(1, LightDriverSpy_GetLastId());
+    LONGS_EQUAL(LIGHT_OFF, LightDriverSpy_GetLastState());
+}
+
+TEST(LightDriverSpy, RecordsLastIdLastTurnOff)
+{
+    LightDriver_TurnOn(lightDriverSpy);
+    LONGS_EQUAL(1, LightDriverSpy_GetLastId());
+    LONGS_EQUAL(LIGHT_ON, LightDriverSpy_GetLastState());
 }

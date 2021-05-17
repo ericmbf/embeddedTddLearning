@@ -24,30 +24,47 @@
 /*-    www.renaissancesoftware.net james@renaissancesoftware.net       -*/
 /*- ------------------------------------------------------------------ -*/
 
-#ifndef D_LightDriverSpy_H
-#define D_LightDriverSpy_H
+#include "CountingLightDriver.h"
+#include "common.h"
+#include <stdlib.h>
+#include <memory.h>
 
-#include "LightDriver.h"
-#include "LightController.h"
+typedef struct CountingLightDriverStruct * CountingLightDriver;
 
-LightDriver LightDriverSpy_Create(int id);
-void LightDriverSpy_InstallInterface(void);
+typedef struct CountingLightDriverStruct
+{
+    LightDriverStruct base;
+    int counter;
+} CountingLightDriverStruct;
 
-void LightDriverSpy_Destroy(LightDriver);
-void LightDriverSpy_TurnOn(LightDriver);
-void LightDriverSpy_TurnOff(LightDriver);
+static void count(LightDriver base)
+{
+    CountingLightDriver self = (CountingLightDriver)base;
+    self->counter++;
+}
 
-/* Functions just needed by the spy */
-void LightDriverSpy_Reset(void);
-int LightDriverSpy_GetState(int id);
-int LightDriverSpy_GetLastId(void);
-int LightDriverSpy_GetLastState(void);
-void LightDriverSpy_AddSpiesToController(void);
+static void destroy(LightDriver base)
+{
+    CountingLightDriver self = (CountingLightDriver)base;
+    free(self);
+}
 
-enum {
-    LIGHT_ID_UNKNOWN = -1, LIGHT_STATE_UNKNOWN = -1,
-    LIGHT_OFF = 0, LIGHT_ON = 1
+static LightDriverInterfaceStruct interface =
+{
+    count, count, destroy
 };
 
+LightDriver CountingLightDriver_Create(int id)
+{
+    CountingLightDriver self = calloc(1, sizeof(CountingLightDriverStruct));
+    self->base.vtable = &interface;
+    self->base.type = "CountingLightDriver";
+    self->base.id = id;
+    return (LightDriver)self;
+}
 
-#endif  /* D_LightDriverSpy_H */
+int CountingLightDriver_GetCallCount(LightDriver base)
+{
+    CountingLightDriver self = (CountingLightDriver)base;
+    return self->counter;
+}

@@ -21,7 +21,6 @@
 enum
 {
     TIME_UNKNOWN = -1,
-    SATURDAY = 7
 };
 
 TEST_GROUP(FakeTimeService);

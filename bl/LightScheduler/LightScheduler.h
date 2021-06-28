@@ -1,5 +1,7 @@
 #include <stdint.h>
+#include "TimeService.h"
 
+#if 0
 typedef enum E_DAY_t
 {
     NONE = -1,
@@ -14,7 +16,7 @@ typedef enum E_DAY_t
     FRIDAY,
     SATURDAY
 } E_DAY_t;
-
+#endif
 typedef enum E_LS_T
 {
     E_LS_UNKNOWN = -1,

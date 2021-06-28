@@ -23,8 +23,8 @@
 /*-                                                                    -*/
 /*-    www.renaissancesoftware.net james@renaissancesoftware.net       -*/
 /*- ------------------------------------------------------------------ -*/
-
 #include "TimeService.h"
+#include "common.h"
 
 BOOL Time_MatchesDayOfWeek(Time * time, E_DAY_t day)
 {

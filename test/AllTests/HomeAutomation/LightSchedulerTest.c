@@ -5,7 +5,6 @@
 #include "LightScheduler.h"
 #include "LightSchedulerTest.h"
 #include "LightControllerSpy.h"
-#include "TimeService.h"
 #include "FakeRandomMinute.h"
 
 #if UNIT_TEST && MSP430

@@ -28,6 +28,7 @@ void TimeService_GetTime(Time *time)
 {
     time->c_dayOfWeek = gs_time.c_dayOfWeek;
     time->l_minuteOfDay = gs_time.l_minuteOfDay;
+    time->ull_tick = gs_time.ull_tick;
 }
 
 void TimeService_SetPeriodAlarmInSeconds(int seconds, 
@@ -55,6 +56,11 @@ void FakeTimeService_SetMinute(uint32_t ul_min)
 void FakeTimeService_SetDay(uint8_t uc_day)
 {
     gs_time.c_dayOfWeek = uc_day;
+}
+
+void FakeTimeService_SetTick(uint64_t ull_tick)
+{
+    gs_time.ull_tick = ull_tick;
 }
 
 f_wakeup_callback_t FakeTimeService_GetAlarmCallback(void)

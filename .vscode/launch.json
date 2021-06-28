@@ -59,7 +59,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "${workspaceRoot}/.pio/build/native/program",
+            "executable": "/home/eric/workspaces/personal/cProgrammingLanguage/msp430UnitTestLearning/.pio/build/native/program",
             "projectEnvName": "native",
             "toolchainBinDir": "",
             "internalConsoleOptions": "openOnSessionStart",
@@ -72,7 +72,7 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "${workspaceRoot}/.pio/build/native/program",
+            "executable": "/home/eric/workspaces/personal/cProgrammingLanguage/msp430UnitTestLearning/.pio/build/native/program",
             "projectEnvName": "native",
             "toolchainBinDir": "",
             "internalConsoleOptions": "openOnSessionStart"

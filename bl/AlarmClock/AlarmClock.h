@@ -2,6 +2,7 @@
 #include <stdbool.h>
 
 #if UNIT_TEST
+#define ALARM_CLOCK_OVERFLOW                                0xFFFFFFFFFFFFFFFF
 #define ALARM_CLOCK_LEN                                     10
 #endif
 
@@ -10,7 +11,9 @@ typedef void (*fp_alarm_clock_cb_t) (void);
 #if UNIT_TEST
 typedef enum E_ALARM_STATE
 {
-    E_ALARM_STATE_DISABLED = 0,
+    E_ALARM_STATE_AVAILABLE = 0,
+    E_ALARM_STATE_CREATED,
+    E_ALARM_STATE_DISABLED,
     E_ALARM_STATE_ENABLED,
 } E_ALARM_STATE_t;
 
@@ -20,6 +23,7 @@ typedef struct AlarmClockStruct
     fp_alarm_clock_cb_t cb;
     uint64_t ull_tick;
     E_ALARM_STATE_t e_state;
+    bool b_timeOverFlow;
 } s_alarm_clock_t;
 #endif
 
@@ -40,4 +44,5 @@ void AlarmClock_disableAlarm(uint8_t uc_alarmId);
 
 #if UNIT_TEST
 uint8_t * AlarmClockSpy_getList();
+uint8_t AlarmClockSpy_getAlarmCnt(void);
 #endif

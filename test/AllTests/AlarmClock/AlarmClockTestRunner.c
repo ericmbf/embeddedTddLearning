@@ -19,5 +19,14 @@ TEST_GROUP_RUNNER(AlarmClock)
     RUN_TEST_CASE(AlarmClock, destroyAlarm);
     RUN_TEST_CASE(AlarmClock, useFirstAvailableIdxAlarmAfterDestroyAlarm);
     RUN_TEST_CASE(AlarmClock, disableAlarm);
+    RUN_TEST_CASE(AlarmClock, destroyInvalidId);
+    RUN_TEST_CASE(AlarmClock, disableInvalidAlarm);
+    RUN_TEST_CASE(AlarmClock, createSetAlarmToDisabled);
+    RUN_TEST_CASE(AlarmClock, setAlarmAfterDisable);
+    RUN_TEST_CASE(AlarmClock, setTimeOverFlow);
+    RUN_TEST_CASE(AlarmClock, AlarmBeforeOverFlow);
+    RUN_TEST_CASE(AlarmClock, AlarmSetOverflowNoOverFlowTimeYet);
+    RUN_TEST_CASE(AlarmClock, AlarmOverflowTimeOverFlowNotTimeYet);
+    RUN_TEST_CASE(AlarmClock, AlarmOverflowTimeOverFlowIsTime);
 }
 #endif
